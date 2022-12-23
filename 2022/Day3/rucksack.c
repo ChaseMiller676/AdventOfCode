@@ -21,6 +21,10 @@ int calcSackPriority(char * stringOne, char * stringTwo, size_t len) {
     char seen[len];
 
     for (int i = 0; i < (int)len; i++) {
+	seen[i] = '0';
+    }
+
+    for (int i = 0; i < (int)len; i++) {
 	flag = false;
 	for (int j = 0; j < (int)len; j++) {
 	    if (stringOne[i] == seen[j]) {
@@ -38,10 +42,6 @@ int calcSackPriority(char * stringOne, char * stringTwo, size_t len) {
 		}
 	    }
 	}
-    }
-
-    for (; seenIndex < (int)len; seenIndex++) {
-	seen[seenIndex] = '0';
     }
 
     for (int i = 0; i < (int)len; i++) {
@@ -68,7 +68,9 @@ int main(void) {
     }
 
     while ((read = getline(&line, &len, pRucksack)) != -1) { 
-	size_t lineLen = strlen(line) - 1; 
+	size_t lineLen = strlen(line) - 1;
+	if (lineLen % 2 != 0)
+	    printf("%lu\n", lineLen);
 	size_t halfLineLen = lineLen/2;
 	char compOne[halfLineLen], compTwo[halfLineLen];
 
