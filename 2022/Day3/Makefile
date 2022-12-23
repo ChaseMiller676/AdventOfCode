@@ -1,2 +1,2 @@
-rucksack: rucksack.c
-	$(CC) -Wall -Wextra -o rucksack rucksack.c
+rucksackThree: rucksackThree.c
+	$(CC) -Wall -Wextra -o rucksackThree rucksackThree.c
