@@ -69,8 +69,6 @@ int main(void) {
 
     while ((read = getline(&line, &len, pRucksack)) != -1) { 
 	size_t lineLen = strlen(line) - 1;
-	if (lineLen % 2 != 0)
-	    printf("%lu\n", lineLen);
 	size_t halfLineLen = lineLen/2;
 	char compOne[halfLineLen], compTwo[halfLineLen];
 
