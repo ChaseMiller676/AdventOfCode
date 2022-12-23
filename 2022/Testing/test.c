@@ -9,30 +9,48 @@ int calcCharPriority(char character) {
 	if ((int)character > 96) {
 	    return ((int)character - 96);
 	} else {
-	    return ((int)character - 64);
+	    return ((int)character - 38);
 	}
     }
 }
 
 int calcSackPriority(char * stringOne, char * stringTwo, size_t len) {
-    int charOneCount, charTwoCount, priority = 0;
+    int seenIndex = 0, priority = 0;
+    bool flag;
+    char seen[len];
 
-    for (int i = 0; (unsigned long)i < len; i++) {
-	for (int j = 0; (unsigned long)j < len; j++) {
-	    if (stringOne[i] == stringTwo[j]) {
-		
+    for (int i = 0; i < (int)len; i++) {
+	flag = false;
+	for (int j = 0; j < (int)len; j++) {
+	    if (stringOne[i] == seen[j]) {
+		flag = true;
+		break;
 	    }
 	}
-
-	for (int j = 0; (unsigned long)j < len; j++) {
-	    if (stringTwo[i] == stringOne[j]) {
-
-	    }
-	}
-
 	
+	if (!flag) {
+	    for (int j = 0; j < (int)len; j++) {
+		if (stringOne[i] == stringTwo[j]) {
+		    seen[seenIndex] = stringOne[i];
+		    seenIndex++;
+		    break;
+		}
+	    }
+	}
     }
 
+    for (; seenIndex < (int)len; seenIndex++) {
+	seen[seenIndex] = '0';
+    }
+
+    for (int i = 0; i < (int)len; i++) {
+	if (seen[i] == '0') {
+	    break;
+	}
+	priority += calcCharPriority(seen[i]);
+    }
+
+    printf("%i\n", priority);
     return priority;
 }
 
@@ -50,17 +68,15 @@ int main(void) {
     for (int i = 0; i < 6; i++) {
 	size_t len = strlen(sacks[i]); 
 	size_t halfLen = len/2;
-	char compOne[halfLen+1], compTwo[halfLen+1];
+	char compOne[halfLen], compTwo[halfLen];
 
 	for (j = 0; (unsigned long)j < halfLen; j++) {
 	    compOne[j] = sacks[i][j];
 	}
-	compOne[j] = '\0';
 
 	for (k = 0; (unsigned long)k < halfLen; k++) {
 	    compTwo[k] = sacks[i][halfLen+k];
 	}
-	compTwo[k] = '\0';
 
 	priority += calcSackPriority(compOne, compTwo, halfLen);
     }

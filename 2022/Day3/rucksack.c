@@ -1,44 +1,65 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-size_t calcCharPriority(char ch) {
-    size_t priority = 0;
-
-    if ((int)ch > 96) {
-	priority -= 96;
+int calcCharPriority(char character) {
+    if ((int)character == 0 && character != '0') {
+	return 0;
     } else {
-	priority -= 38;
+	if ((int)character > 96) {
+	    return ((int)character - 96);
+	} else {
+	    return ((int)character - 38);
+	}
     }
-
-    return priority;
 }
 
-size_t calcLinePriority(size_t len, char line[len]) {
-    size_t priority = 0;
+int calcSackPriority(char * stringOne, char * stringTwo, size_t len) {
+    int seenIndex = 0, priority = 0;
+    bool flag;
+    char seen[len];
 
-    for (size_t i = 0; i < len/2; i++) {
-	if (line[i] == line[i + len/2]) {
-	    priority += calcCharPriority(line[i]);
+    for (int i = 0; i < (int)len; i++) {
+	flag = false;
+	for (int j = 0; j < (int)len; j++) {
+	    if (stringOne[i] == seen[j]) {
+		flag = true;
+		break;
+	    }
 	}
+	
+	if (!flag) {
+	    for (int j = 0; j < (int)len; j++) {
+		if (stringOne[i] == stringTwo[j]) {
+		    seen[seenIndex] = stringOne[i];
+		    seenIndex++;
+		    break;
+		}
+	    }
+	}
+    }
+
+    for (; seenIndex < (int)len; seenIndex++) {
+	seen[seenIndex] = '0';
+    }
+
+    for (int i = 0; i < (int)len; i++) {
+	if (seen[i] == '0') {
+	    break;
+	}
+	priority += calcCharPriority(seen[i]);
     }
 
     return priority;
 }
 
 int main(void) {
-    /* FILE * pRucksack; */
-    char * line[6] = {
-	"vJrwpWtwJgWrhcsFMMfFFhFp\0",
-	"jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\0",
-	"PmmdzqPrVvPwwTWBwg\0",
-	"wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\0",
-	"ttgJtRGJQctTZtZT\0",
-	"CrZsJsPPZsGzwwsLwLmpwMDw\0"
-    };
-    size_t totalPriority = 0;
-    size_t len;
-    /* ssize_t read;
+    FILE * pRucksack;
+    char * line;
+    int j, k, priority = 0;
+    size_t len = 0;
+    ssize_t read;
 
     pRucksack = fopen("./input", "r");
     if (pRucksack == NULL) {
@@ -47,20 +68,27 @@ int main(void) {
     }
 
     while ((read = getline(&line, &len, pRucksack)) != -1) { 
-     	totalPriority += calcLinePriority(line, len);
-     }
+	size_t lineLen = strlen(line) - 1; 
+	size_t halfLineLen = lineLen/2;
+	char compOne[halfLineLen], compTwo[halfLineLen];
+
+	for (j = 0; (unsigned long)j < halfLineLen; j++) {
+	    compOne[j] = line[j];
+	}
+
+	for (k = 0; (unsigned long)k < halfLineLen; k++) {
+	    compTwo[k] = line[halfLineLen+k];
+	}
+
+	priority += calcSackPriority(compOne, compTwo, halfLineLen);
+    }
 
      fclose(pRucksack);
      if (line) { 
 	 free(line);
-     } */
+     }
 
-    for (int i = 0; i < 6; i++) {
-	len = strlen(line[i]);
-	totalPriority += calcLinePriority(len, *line);
-    }
-
-    printf("Total Priority: %lu\n", totalPriority);
+    printf("Total Priority: %i\n", priority);
 
     return 0;
 }
