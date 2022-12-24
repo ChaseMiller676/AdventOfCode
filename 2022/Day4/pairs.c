@@ -1,39 +1,15 @@
+#include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
-
-int containsRedundancy(int taskPairs[4]) {
-    if (taskPairs[2] >= taskPairs[0]) {
-	printf("%i >= %i\n", taskPairs[2], taskPairs[0]);
-	if (taskPairs[3] <= taskPairs[1]) {
-	    printf("%i <= %i\n", taskPairs[3], taskPairs[1]);
-	    puts("Found Redundancy");
-	    return 1;
-	} else {
-	    printf("%i > %i\n", taskPairs[3], taskPairs[1]);
-	    puts("No Redundancy");
-	    return 0;
-	}
-    } else {
-	printf("%i < %i\n", taskPairs[2], taskPairs[0]);
-	if (taskPairs[3] >= taskPairs[1]) {
-	    printf("%i >= %i\n", taskPairs[3], taskPairs[1]);
-	    puts("Found Redundancy");
-	    return 1;
-	} else {
-	    printf("%i < %i\n", taskPairs[3], taskPairs[1]);
-	    puts("No Redundancy");
-	    return 0;
-	}
-    }
-}
 
 int main(void) {
     FILE * tasks;
-    char * line;
+    char * line = NULL;
     size_t len = 0;
-    ssize_t read;
-    unsigned int taskNumbers;
+
     tasks = fopen("./input", "r");
     if (tasks == NULL) {
 	puts("File Not Found");
@@ -41,18 +17,40 @@ int main(void) {
     }
 
     int taskPairs[4];
-    int redundancies = 0, i = 0;
-
-    while ((read = getline(&line, &len, tasks)) != -1) {
-
+    int redundancies = 0;
+    
+    while (getline(&line, &len, tasks) != -1)
+    {
+	for (int i = 0; i < (int)strlen(line); i++) {
+	    if (line[i] == ',' || line[i] == '-') {
+		line[i] = ' ';
+	    }
+	}
 	
+	int i = 0;	
+        char *start = line;
+        char *eon;
+        long value;
+        errno = 0;
+        while ((value = strtol(start, &eon, 0)),
+	       eon != start &&
+               !((errno == EINVAL && value == 0) ||
+                 (errno == ERANGE && (value == LONG_MIN || value == LONG_MAX))))
+        {
 
-	if (i == 4) {
-	    redundancies += containsRedundancy(taskPairs);
-	    i = 0;
+
+	    taskPairs[i] = value;
+	    i++;
+	    start = eon;
+            errno = 0;
+        }
+
+	if ((taskPairs[0] >= taskPairs[2] && taskPairs[1] <= taskPairs[3]) ||
+	    (taskPairs[2] >= taskPairs[0] && taskPairs[3] <= taskPairs[1])) {
+	    redundancies++;
 	}
     }
-
+    
     printf("Redundancies: %i\n", redundancies);
 
     fclose(tasks);

@@ -2,14 +2,29 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main(void)
 {
+    FILE * testFile;
+    testFile = fopen("./input", "r");
+
+    if (testFile == NULL) {
+	puts("File Not Found");
+	return 1;
+    }
+
     char *line = NULL;
     size_t len = 0;
 
-    while (getline(&line, &len, stdin) != -1)
+    while (getline(&line, &len, testFile) != -1)
     {
+	for (int i = 0; i < (int)strlen(line); i++) {
+	    if (line[i] == ',' || line[i] == '-') {
+		line[i] = ' ';
+	    }
+	}
+	
         printf("Line input : [%s]\n", line);
         int val = atoi(line);
         printf("Parsed integer: %d\n", val);
