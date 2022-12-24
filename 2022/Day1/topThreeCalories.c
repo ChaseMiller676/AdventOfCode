@@ -1,8 +1,6 @@
 /*
 Solved!
 */
-
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,8 +57,9 @@ int main(void) {
 
     printf("First:\t%i\n", finalSums[2]);
     printf("Second:\t%i\n", finalSums[1]);
-    printf("Thrid:\t%i\n", finalSums[0]);
+    printf("Third:\t%i\n", finalSums[0]);
     printf("Sum: %i\n", (finalSums[0] + finalSums[1] + finalSums[2]));
 
     return 0;
+
 }
