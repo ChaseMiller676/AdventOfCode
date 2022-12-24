@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -15,49 +16,41 @@ int calcCharPriority(char character) {
     }
 }
 
-int calcSackPriority(char * stringOne, char * stringTwo, size_t len) {
-    int seenIndex = 0, priority = 0;
-    bool flag;
-    char seen[len];
+int calcGroupPriority(char group[3][50]) {
+    bool firstMatchFlag = false, secondMatchFlag = false;
 
-    for (int i = 0; i < (int)len; i++) {
-	seen[i] = '0';
-    }
-
-    for (int i = 0; i < (int)len; i++) {
-	flag = false;
-	for (int j = 0; j < (int)len; j++) {
-	    if (stringOne[i] == seen[j]) {
-		flag = true;
+    for (int i = 0; i < (int)sizeof(group[0]); i++) {
+	for (int j = 0; j < (int)sizeof(group[1]); j++) {
+	    if (group[1][j] == group[0][i]) {
+		firstMatchFlag = true;
 		break;
 	    }
 	}
-	
-	if (!flag) {
-	    for (int j = 0; j < (int)len; j++) {
-		if (stringOne[i] == stringTwo[j]) {
-		    seen[seenIndex] = stringOne[i];
-		    seenIndex++;
+
+	if (firstMatchFlag) {
+	    for (int k = 0; k < (int)sizeof(group[2]); k++) {
+		if (group[2][k] == group[0][i]) {
+		    secondMatchFlag = true;
 		    break;
 		}
 	    }
 	}
-    }
 
-    for (int i = 0; i < (int)len; i++) {
-	if (seen[i] == '0') {
-	    break;
+	if (secondMatchFlag) {
+	    return calcCharPriority(group[0][i]);
+	} else {
+	    firstMatchFlag = false;
 	}
-	priority += calcCharPriority(seen[i]);
     }
 
-    return priority;
+    return 0;
 }
 
 int main(void) {
     FILE * pRucksack;
     char * line;
-    int j, k, priority = 0;
+    char group[3][50];
+    int i = 0, j = 1, priority = 0;
     size_t len = 0;
     ssize_t read;
 
@@ -68,27 +61,23 @@ int main(void) {
     }
 
     while ((read = getline(&line, &len, pRucksack)) != -1) { 
-	size_t lineLen = strlen(line) - 1;
-	size_t halfLineLen = lineLen/2;
-	char compOne[halfLineLen], compTwo[halfLineLen];
-
-	for (j = 0; (unsigned long)j < halfLineLen; j++) {
-	    compOne[j] = line[j];
+	strcpy(group[i], line);
+	i = (i + 1) % 3;
+	if (i == 0) {
+	    printf("Group %i:\n", j);
+	    for (int k = 0; k < 3; k++) {
+		printf("%s", group[k]);
+	    }
+	    j++;
+	    priority += calcGroupPriority(group);
+	    printf("Priority: %i\n", priority);	    
 	}
-
-	for (k = 0; (unsigned long)k < halfLineLen; k++) {
-	    compTwo[k] = line[halfLineLen+k];
-	}
-
-	priority += calcSackPriority(compOne, compTwo, halfLineLen);
     }
 
-     fclose(pRucksack);
-     if (line) { 
-	 free(line);
-     }
-
-    printf("Total Priority: %i\n", priority);
+    fclose(pRucksack);
+    if (line) { 
+	free(line);
+    }
 
     return 0;
 }
