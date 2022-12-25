@@ -1,49 +1,71 @@
-#include <errno.h>
-#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define SIZE 10
+
+int top = -1;
+char stack[SIZE];
+
+void pop() {
+    if (!(top >= 0)) {
+	puts("Stack Underflow");
+	exit(1);
+    }
+
+    top--;
+}
+
+void push(char val) {
+    if (top == (SIZE - 1)) {
+	puts("Stack Overflow");
+	exit(1);
+    }
+
+    top++;
+    stack[top] = val;
+}
+
+void show() {
+    if (top < 0) {
+	puts("Stack is Empty");
+	return;
+    }
+
+    for (int i = 0; i < (top + 1); i++) {
+	printf("%c", stack[i]);
+    }
+
+    putchar('\n');
+}
 
 int main(void)
 {
-    FILE * testFile;
-    testFile = fopen("./input", "r");
+    int input;
+    char pushVal;
 
-    if (testFile == NULL) {
-	puts("File Not Found");
-	return 1;
-    }
+    while (1) {
+	puts("1. Pop");
+	puts("2. Push");
+	puts("3. Show");
+	puts("4. Quits");
 
-    char *line = NULL;
-    size_t len = 0;
+	scanf("%i", &input);
 
-    while (getline(&line, &len, testFile) != -1)
-    {
-	for (int i = 0; i < (int)strlen(line); i++) {
-	    if (line[i] == ',' || line[i] == '-') {
-		line[i] = ' ';
-	    }
+	switch (input) {
+	case 1:
+	    pop();
+	    break;
+	case 2:
+	    getchar();
+	    puts("Enter a value to push");
+	    scanf("%c", &pushVal);
+	    push(pushVal);
+	    break;
+	case 3:
+	    show();
+	    break;
+	case 4:
+	    exit(0);
 	}
-	
-        printf("Line input : [%s]\n", line);
-        int val = atoi(line);
-        printf("Parsed integer: %d\n", val);
-
-        char *start = line;
-        char *eon;
-        long value;
-        errno = 0;
-        while ((value = strtol(start, &eon, 0)),
-	       eon != start &&
-               !((errno == EINVAL && value == 0) ||
-                 (errno == ERANGE && (value == LONG_MIN || value == LONG_MAX))))
-        {
-            printf("%ld\n", value);
-            start = eon;
-            errno = 0;
-        }
-        putchar('\n');
     }
-    free(line);
-    return 0;
 }
