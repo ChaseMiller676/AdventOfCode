@@ -48,8 +48,10 @@ int main(void) {
             errno = 0;
         }
 
-	if ((taskPairs[0] >= taskPairs[2] && taskPairs[1] <= taskPairs[3]) ||
-	    (taskPairs[2] >= taskPairs[0] && taskPairs[3] <= taskPairs[1])) {
+	if ((taskPairs[0] >= taskPairs[2] && taskPairs[0] <= taskPairs[3]) ||
+	    (taskPairs[1] >= taskPairs[2] && taskPairs[1] <= taskPairs[3]) ||
+	    (taskPairs[2] >= taskPairs[0] && taskPairs[2] <= taskPairs[1]) ||
+	    (taskPairs[3] >= taskPairs[0] && taskPairs[3] <= taskPairs[1])){
 	    redundancies++;
 	}
     }
