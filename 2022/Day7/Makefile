@@ -1,2 +1,4 @@
+CC = gcc
+
 term: term.c
-	$(CC) -Wall -Wextra -o term term.c
+	$(CC) -Wall -Wextra -g -o term term.c
