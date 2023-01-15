@@ -5,6 +5,7 @@ Solved!
 #include <stdlib.h>
 #include <string.h>
 #define FILE_PATH "./input"
+#define FILESYSTEM_SIZE 70000000
 
 enum {
     LOG_MODE,
@@ -20,7 +21,12 @@ typedef struct dir {
 } dir;
 
 dir *currentNode;
-int finalSum = 0;
+int targetDirSize = FILESYSTEM_SIZE;
+
+// This assumes that the filesystem is empty
+// Should change after running initFileSystem()
+int availableSpace = FILESYSTEM_SIZE;
+int neededSpace;
 
 char *getSubString(char *string, int subStart, int subEnd);
 dir *newDir(dir *parent, char *dirName);
@@ -28,24 +34,28 @@ void logData(char *line);
 void changeDir(char *command);
 void initFileSystem();
 void parseNode(dir *node);
+void correctDirSizes(dir *node);
 
 int main(void) {
     initFileSystem();
+    availableSpace -= currentNode->size;
+    neededSpace = 30000000 - availableSpace;
     parseNode(currentNode);
-    printf("Final Sum: %d\n", finalSum);
 
+    printf("Target Directory Size: %d\n", targetDirSize);
+    
     return 0;
 }
 
 // Parsing
+
 void parseNode(dir *node) {
-    for (int i = 0; i < node->subDirCount; i++) {
-	node->size += node->subDir[i]->size;
-	parseNode(node->subDir[i]);
+    if (node->size >= neededSpace && node->size <= targetDirSize) {
+	targetDirSize = node->size;
     }
 
-    if (node->size <= 100000) {
-	finalSum += node->size;
+    for (int i = 0; i < node->subDirCount; i++) {
+	parseNode(node->subDir[i]);
     }
 }
 
@@ -95,8 +105,25 @@ void initFileSystem() {
     free(line);
     line = NULL;
 
-    while (currentNode->parent != NULL) {
+    while (currentNode->parent != NULL &&
+	   strcmp(currentNode->dirName, "/") != 0) {
 	currentNode = currentNode->parent;
+    }
+
+    correctDirSizes(currentNode);
+
+    while (currentNode->parent != NULL &&
+	   strcmp(currentNode->dirName, "/") != 0) {
+	currentNode = currentNode->parent;
+    }    
+}
+
+void correctDirSizes(dir *node) {
+    for (int i = 0; i < node->subDirCount; i++) {
+	if (node->subDir[i]->subDirCount != 0){
+	    correctDirSizes(node->subDir[i]);
+	}
+	node->size += node->subDir[i]->size;
     }
 }
 
@@ -109,7 +136,8 @@ void logData(char *line) {
     }
     
     char *dirName = getSubString(line, 4, strlen(line) - 1);
-    currentNode->subDir[currentNode->subDirCount] = newDir(currentNode, dirName);
+    currentNode->subDir[currentNode->subDirCount]
+	= newDir(currentNode, dirName);
     currentNode->subDirCount++;
 }
 
@@ -141,12 +169,12 @@ void changeDir(char *command) {
     if (strcmp(destDir, "..") == 0 && currentNode->parent != NULL) {
 	currentNode = currentNode->parent;
 	return;
-    } else {
-	for (int i = 0; i < currentNode->subDirCount; i++) {
-	    if (strcmp(destDir, currentNode->subDir[i]->dirName) == 0) {
-		currentNode = currentNode->subDir[i];
-		break;
-	    }
+    }
+
+    for (int i = 0; i < currentNode->subDirCount; i++) {
+	if (strcmp(destDir, currentNode->subDir[i]->dirName) == 0) {
+	    currentNode = currentNode->subDir[i];
+	    break;
 	}
     }
 }

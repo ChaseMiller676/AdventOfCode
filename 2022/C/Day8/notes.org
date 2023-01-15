@@ -1,0 +1,27 @@
+* Notes
+** Problem
+- Below is a grid of the heights of trees:
+|---+---+---+---+---|
+| 3 | 0 | 3 | 7 | 0 |
+|---+---+---+---+---|
+| 2 | 5 | 5 | 1 | 2 |
+|---+---+---+---+---|
+| 6 | 5 | 3 | 3 | 2 |
+|---+---+---+---+---|
+| 3 | 3 | 5 | 4 | 9 |
+|---+---+---+---+---|
+| 3 | 5 | 3 | 9 | 0 |
+|---+---+---+---+---|
+- You have to determine how many of the trees are visible from any of their four faces
+*** Examples
+- The tree in Row One, Column One, has a height of 3. The tree is visible from the two exterior faces, because there aren't any trees that could block the view of it. However, that tree is not visible from the bottom face and the right face. This is because, if you were to look at the first column of trees from the bottom face, the tree that is height 6 would block the visibility of the trees behind it that are shorter. Conversely, looking at the first row from the right face, the tree that is height 7 blocks the visibility of all trees behind it that are shorter.
+- Using this set of rules, all trees on the perimeter will be counted as visible, while any internal trees will only be counted as visible if and only if the cells between at least one of the trees faces and the edge of the grid does not contain any tree that is greater than or equal to the height of the tree being tested.
+  + e.g. the tree in Row Three, Column Three, is considered invisible, as at least one cell in all four directions contains a tree of height 3 or greater. 
+** Planning
+- My first idea is to store the grid as a 2d array, and to iterate through each face and checking for visibility. Here's how I think that would work:
+  1) Read a line from the file
+  2) Iterate through the line forwards and backwards, determining which cells can be considered visible.
+  3) Store each character in an array corresponding to what column it's in.
+  4) Repeat steps 1-3 until the whole file has been read
+  5) Iterate through each line, forwards and backwards, to determine what trees are visible from those directions.
+  6) Add up and print the total of visible trees
