@@ -1,5 +1,5 @@
 /*
-Solved!
+Solved
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +8,6 @@ Solved!
 #define COLUMNS 99
 #define ROWS 99
 
-void dumpMatrix(int matrix[ROWS][COLUMNS]);
 void checkVisibility(int treeMatrix[ROWS][COLUMNS],
 		     int seenMatrix[ROWS][COLUMNS]);
 

@@ -1,6 +1,5 @@
 /*
-TODO: Fix the algorithm so that I get the correct answer
-instead of a wrong answer
+Solved!
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,61 +62,39 @@ int main(void) {
     return 0;
 }
 
+// review this function and find out why it works
 int calculateScenicScore(int treeMatrix[ROWS][COLUMNS], int row, int column) {
-    int blockerTreeHeight = -1;
-    int visibleTrees[4] = {0, 0, 0, 0};
+    int threshold = treeMatrix[row][column];
+    int dx=0;
+    int dy=0;
+    int scenicScore = 1;
 
-    for (int i = (row - 1); i >= 0; i--) {
-	if (treeMatrix[i][column] >= blockerTreeHeight) {
-	    blockerTreeHeight = treeMatrix[i][column];
-	    visibleTrees[UP]++;
-	}
-
-	if (blockerTreeHeight >= treeMatrix[row][column]) {
-	    break;
-	}
+    for(dy=row-1;dy>=0;dy--) {
+        if(treeMatrix[dy][column] >= threshold || dy==0) {
+            scenicScore *= (row - dy);
+            break;
+        }
     }
 
-    blockerTreeHeight = -1;
-
-    for (int i = (row + 1); i < ROWS; i++) {
-	if (treeMatrix[i][column] >= blockerTreeHeight) {
-	    blockerTreeHeight = treeMatrix[i][column];
-	    visibleTrees[DOWN]++;
-	}
-
-	if (blockerTreeHeight >= treeMatrix[row][column]) {
-	    break;
-	}
+    for(dy=row+1;dy<ROWS;dy++) {
+        if(treeMatrix[dy][column] >= threshold || dy == ROWS-1) {
+            scenicScore *= (dy-row);
+            break;
+        }
     }
 
-    blockerTreeHeight = -1;
-
-    for (int i = (column - 1); i >= 0; i--) {
-	if (treeMatrix[row][i] >= blockerTreeHeight) {
-	    blockerTreeHeight = treeMatrix[row][i];
-	    visibleTrees[LEFT]++;
-	}
-
-	if (blockerTreeHeight >= treeMatrix[row][column]) {
-	    break;
-	}
-    }
-    
-    blockerTreeHeight = -1;
-
-
-    for (int i = column + 1; i < COLUMNS; i++) {
-	if (treeMatrix[row][i] >= blockerTreeHeight) {
-	    blockerTreeHeight = treeMatrix[row][i];
-	    visibleTrees[RIGHT]++;
-	}
-
-	if (blockerTreeHeight >= treeMatrix[row][column]) {
-	    break;
-	}
+    for(dx=column-1;dx>=0;dx--) {
+        if(treeMatrix[row][dx] >= threshold || dx == 0) {
+            scenicScore *= (column-dx);
+            break;
+        }
     }
 
-    return (visibleTrees[UP] * visibleTrees[DOWN] *
-	    visibleTrees[LEFT] * visibleTrees[RIGHT]);
+    for(dx=column+1;dx<COLUMNS;dx++) {
+        if(treeMatrix[row][dx] >= threshold || dx == COLUMNS-1) {
+            scenicScore *= (dx - column);
+            break;
+        }
+    }
+    return scenicScore;
 }

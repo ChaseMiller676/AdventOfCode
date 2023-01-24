@@ -1,0 +1,71 @@
+* Advent Day 9
+** Problem
+Given a series of inputs, count all the positions that the tail of a rope will have visited at least once by the end of the instruction set
+** Planning
+- I'll definitely have a 2D Boolean array to represent the possible positions for the head and tail. The hard part is determining the tails position based around the head's movement and position
+*** Rules of the Rope
+- =The Head and the Tail must *ALWAY* be touching=
+  + Includes: Horizontal, Diagonal, or Overlapping Contact
+- The starting position has the Head and Tail overlapping
+**** Horizontal Movement Rules    
+- If the Head is two steps up from the Tail then
+  the Tail must move one step up
+- If the Head is two steps left from the Tail then
+  the Tail must move one step left
+- If the Head is two steps right from the Tail then
+  the Tail must move one step right
+- If the Head is two steps down from the Tail then
+  the Tail must move one step down
+**** Diagonal Movement Rules
+- If the Head is one/two steps up and one/two steps right of the Tail then the tail must move up and right one step
+- If the Head is one/two steps up and one/two steps left of the Tail then the tail must move up and left one step
+- If the Head is one/two steps down and one/two steps right of the Tail then the tail must move down and right one step
+- If the Head is one/two steps down and one/two steps left of the Tail then the tail must move down and left one step
+*** Algorithms/Pseudo Code
+- There doesn't seem to be a convenient way to determine the size of the area that the Head and Tail will have to move around, so I think the safest bet is to have a 100 by 100 array and treat the head and tail like they begin in the certain. The instructions are given are in the format of (R/L/U/D #). Perhaps a good approach would be to read the direction and the number of repetitions, and use that in a for loop. Then, every time a loop is executed, check if the distance between the Head and the Tail is 2, and if it is, then move the location of the tail and set those coordinated in the Boolean array to true. Afterwards, simply count the amount of indexes that are marked true.
+**** Pseudo Code
+1) Open input file
+2) Read one line
+3) For the amount of repetitions indicated do this
+   1) Move the position of the head by one in the indicated direction
+   2) If the distance between the Head and Tail is greater than 1
+      * Then
+	1) Move the Tail 1 step
+	2) Mark the coordinates of the Tail as true in Boolean array
+4) Repeat steps 2 and 3 until no more instructions can be read
+5) Close input file
+6) For each index in the Boolean array do this
+   1) If the index value is equal to true
+      * Then
+	1) Increment the final count by 1
+7) Print the final count
+**** Algorithm: Moving the Tail
+Requires:
+- X coordinate of Head
+- Y coordinate of Head
+- X coordinate of Tail
+- Y coordinate of Tail
+Returns:
+- integer array of size 2
+Process:
+1) Subtract Head coordinates from Tail coordinates
+2) If the difference of x is non zero and the difference of y is zero
+   * Then
+     1) integer array index 0 = difference of x / absolute value of x
+	integer array index 1 = 0
+     2) return integer array
+3) If the difference of x is zero and the difference of y is nonzero
+   * Then
+     1) integer array index 0 = 0
+	integer array index 1 = difference of y / absolute value of y
+     2) return integer array
+4) If the difference of x and y are both zero
+   * Then
+     1) integer array index 0 = 0
+	integer array index 1 = 0
+     2) return integer array
+5) If the difference of x and y are both nonzero
+   * Then
+     1) integer array index 0 = difference of x / absolute value of x
+	integer array index 1 = difference of y / absolute value of y
+     2) return integer array
